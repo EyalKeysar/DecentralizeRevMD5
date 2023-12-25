@@ -5,19 +5,31 @@ NOT_DONE = 0
 IN_PROGRESS = 1
 DONE = 2
 
+
+
 class TaskHandler():
     def __init__(self):
         self.tasklist = [NOT_DONE for i in range((RANGE[1] - RANGE[0])/SERVSIZE)]
+        self.clients = {}
         
-    def add_client(self, client):
+    def add_task_client(self, client):
         for i in self.tasklist:
             if(i == NOT_DONE):
                 i = IN_PROGRESS
+                if(client in self.clients):
+                    self.clients[client].append(i)
+                else:
+                    self.clients[client] = [i]
                 return self.tasklist.index(i) * SERVSIZE
         
     
-    def task_checked(self, client):
+    def task_checked(self, client, task):
+        self.tasklist[task] = DONE
+        self.clients[client].remove(task)
+        return
     
+    
+        
     
             
             
