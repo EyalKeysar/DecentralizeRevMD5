@@ -21,8 +21,7 @@ class TaskHandler():
                     self.clients_to_task[client] = []
                 self.clients_to_task[client].append(i)
                 return RANGE[0] + i*SERVSIZE, RANGE[0] + (i+1)*SERVSIZE
-            else:
-                print(i, " already done")
+            
         
         for i in self.tasklist:
             if(i == IN_PROGRESS):

@@ -57,5 +57,5 @@ class Server():
 
 
 if __name__ == '__main__':
-    sServer = Server("7f5c81ae39c25a8cb225fdff3d3c92ba")
+    sServer = Server("e807f1fcf82d132f9bb018ca6738a19f")
     sServer.run()
