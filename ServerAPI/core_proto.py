@@ -1,9 +1,10 @@
-from protoconst import *
+from .protoconst import *
 
 def send_by_size(sock, command, params=None):
-    data = command + params
+    data = (str(command) + str(params)) if params else str(command)
     size = len(data)
-    packet = size + SIZE_DATA_SEP + data
+    packet = str(size) + SIZE_DATA_SEP + data
+    print("Sending: '"+ packet + "'")
     sock.sendall(packet.encode())
     return
 
@@ -18,4 +19,5 @@ def recv_by_size(sock):
     data = sock.recv(datalen).decode()
     command = data[:6]
     params = data[6:]
+    print("Received: '"+ data+ "'")
     return data, command, params

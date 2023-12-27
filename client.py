@@ -2,49 +2,65 @@ from ServerAPI.ServerAPI import ServerAPI
 from hashlib import md5
 from multiprocessing import Process, Queue
 
+class Client():
+    def __init__(self):
+        self.main()
+    def main(self):
+        num_of_cores = 4
+        running_processes = []
 
-def main():
-    num_of_cores = 4
-    running_processes = []
-    
-    server_api = ServerAPI()
-    
-    server_api.connect()
-    
-    while True:
-        task = server_api.get_task()
-        print("Got new task: ", task)
-        if task is False:
-            break
-        if(len(running_processes) >= num_of_cores):
-            for p in running_processes:
-                p.join()
-        do_task_subproc(task, server_api, running_processes)
-    
-    server_api.disconnect()
-    print("Done")
-    
-    
-def do_task_subproc(task, server_api, running_processes):
-    '''
-        create a subprocess and execute the do_task function
-    '''
-    p = Process(target=do_task, args=(task, server_api))
-    running_processes.append(p)
-    p.start()
-    return
-    
-def do_task(task, server_api):
-    for i in range(task[0], task[1]):
-        if(md5(str(i.zfill(10)).encode()).hexdigest() == task[2]):
-            server_api.found(i)
-            return
-    server_api.not_found()
-    
+        self.found_index = -1
+        self.not_found_buff = []
+        
+        self.server_api = ServerAPI()
+        
+        self.server_api.connect()
+        
+        while True:
+            if(len(running_processes) >= num_of_cores):
+                for p in running_processes:
+                    p.join()
+                    running_processes.remove(p)
+                if(self.found_index != -1):
+                    self.server_api.found(self.found_index)
+                    break
+                for i in self.not_found_buff:
+                    self.server_api.not_found(i[0], i[1])
+                    self.not_found_buff.remove(i)
+            else:
+                print("num of running processes: ", len(running_processes))
 
-# Q: how to hash with md5?
-# A: hashlib.md5(str(rand).encode()).hexdigest()
+                task = self.server_api.get_task()
+                print("Got new task: ", task)
+                if task is False:
+                    print("Task False")
+                    break
+                
+                self.do_task_subproc(task, running_processes)
+        
+        self.server_api.disconnect()
+        print("Done")
+        
+        
+    def do_task_subproc(self, task, running_processes):
+        '''
+            create a subprocess and execute the do_task function
+        '''
+        print("Starting new process")
+        p = Process(target=self.do_task, args=(task,))
+        running_processes.append(p)
+        p.start()
+        return
+        
+    def do_task(self, task):
+        for i in range(int(task[0]), int(task[1])):
+            if(md5(str(str(i).zfill(10)).encode()).hexdigest() == task[2]):
+                self.server_api.found(i)
+                return
+        self.not_found_buff.append((int(task[0]), int(task[1])))
+        return
+    
 
 
 if __name__ == "__main__":
-    main()
+    c = Client()

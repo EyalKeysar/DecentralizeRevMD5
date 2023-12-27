@@ -1,6 +1,6 @@
 
 
-PORT = 1337
+PORT = 10101
 HOST = 'localhost'
 
 SIZE_DATA_SEP = '|'
@@ -15,3 +15,5 @@ FOUNDOK = 'FOUNDK'
 
 NOTFOUND = 'NOTFND'
 NOTFOUNDOK = 'NOTFNK'
+
+STOP = 'STOPOP'
